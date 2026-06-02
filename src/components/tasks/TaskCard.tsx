@@ -1,15 +1,17 @@
 'use client'
 import { Calendar, ExternalLink, Clock } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
+import { StatusDropdown } from './StatusDropdown'
 import { cn, formatDate, getTaskUrgency, priorityColors, priorityDot, statusColors } from '@/lib/utils'
 import type { Task } from '@/lib/types'
 
 interface TaskCardProps {
   task: Task
   onClick: (task: Task) => void
+  onUpdate?: (task: Task) => void
 }
 
-export function TaskCard({ task, onClick }: TaskCardProps) {
+export function TaskCard({ task, onClick, onUpdate }: TaskCardProps) {
   const urgency = getTaskUrgency(task)
 
   return (
@@ -37,8 +39,11 @@ export function TaskCard({ task, onClick }: TaskCardProps) {
         <p className="text-xs text-slate-500 mb-3 line-clamp-2">{task.descripcion}</p>
       )}
 
-      <div className="flex flex-wrap gap-1.5 mb-3">
-        <Badge className={statusColors[task.estado]}>{task.estado}</Badge>
+      <div className="flex flex-wrap gap-1.5 mb-3" onClick={e => e.stopPropagation()}>
+        {onUpdate
+          ? <StatusDropdown task={task} onUpdate={onUpdate} />
+          : <Badge className={statusColors[task.estado]}>{task.estado}</Badge>
+        }
         <Badge className={priorityColors[task.prioridad]}>{task.prioridad}</Badge>
         {task.tipo_de_tarea && (
           <Badge className="bg-slate-50 text-slate-600 border-slate-200">{task.tipo_de_tarea}</Badge>

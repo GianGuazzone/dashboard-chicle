@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { Task, Client } from '@/lib/types'
 import { format, parseISO } from 'date-fns'
@@ -71,7 +71,7 @@ export default function StatsPage() {
   const durationMap: Record<string, number> = { corto: 1, medio: 3, largo: 8 }
   const totalHours = tasks.reduce((acc, t) => acc + (durationMap[t.tiempo_estimado] || 0), 0)
 
-  const Card = ({ title, children }: { title: string; children: React.ReactNode }) => (
+  const renderCard = (title: string, children: React.ReactNode) => (
     <div className="bg-white rounded-xl border border-slate-200 p-6">
       <h2 className="font-semibold text-slate-800 mb-5">{title}</h2>
       {children}
@@ -100,7 +100,7 @@ export default function StatsPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card title="Tareas por mes">
+        {renderCard('Tareas por mes',
           <div className="space-y-3">
             {months.map(([month, data]) => (
               <div key={month}>
@@ -114,31 +114,31 @@ export default function StatsPage() {
               </div>
             ))}
           </div>
-        </Card>
+        )}
 
-        <Card title="Tareas por cliente">
+        {renderCard('Tareas por cliente',
           <div className="space-y-3">
             {byClient.map(c => (
               <Bar key={c.name} label={c.name} value={c.total} max={maxByClient} color={c.color} />
             ))}
           </div>
-        </Card>
+        )}
 
-        <Card title="Por prioridad">
+        {renderCard('Por prioridad',
           <div className="space-y-3">
             {byPriority.map(p => (
               <Bar key={p.name} label={p.name} value={p.value} max={maxByPriority} color={priorityColors[p.name]} />
             ))}
           </div>
-        </Card>
+        )}
 
-        <Card title="Por estado">
+        {renderCard('Por estado',
           <div className="space-y-3">
             {byStatus.map(s => (
               <Bar key={s.name} label={s.name} value={s.value} max={maxByStatus} color="#8b5cf6" />
             ))}
           </div>
-        </Card>
+        )}
       </div>
     </div>
   )
